@@ -1,0 +1,10 @@
+# System info configuration
+template: |
+  Operating System: {{ os_system }}
+  OS Version: {{ os_version }}
+  OS Release: {{ os_release }}
+  Architecture: {{ architecture }}
+  Python Version: {{ python_version }}
+  Platform: {{ platform }}
+
+context: {}
