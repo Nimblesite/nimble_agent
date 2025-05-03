@@ -54,7 +54,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pytest-asyncio>=0.23.2 \
     coverage \
     pytest-cov \
-    virtualenv
+    virtualenv \
+    types-Jinja2==2.11.9 \
+    types-PyYAML==6.0.12.12
 
 # Download and install Flutter
 ENV FLUTTER_HOME=/usr/local/flutter

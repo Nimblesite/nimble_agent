@@ -1,9 +1,12 @@
 """Functions used to create agents."""
 
+import os
 import platform
 import sys
-from typing import Any
+from typing import Any, Dict
 
+import jinja2
+import yaml
 from langchain.agents import (
     AgentExecutor,
     create_openai_functions_agent,  # type: ignore
@@ -27,7 +30,8 @@ Python Version: {platform.python_version()}\n
 Platform: {sys.platform}\n
 """
 
-TASK_MESSAGE = """You are an agent that assists with software development tasks. This prompt is in importance order. The most important directives are at the top, and the bottom is informational content.
+# Default prompt content if config files aren't available
+DEFAULT_TASK_MESSAGE = """You are an agent that assists with software development tasks. This prompt is in importance order. The most important directives are at the top, and the bottom is informational content.
 
 Objective: {input}
 
@@ -66,19 +70,52 @@ Guidelines:
 """
 
 
-def get_prompt_template() -> ChatPromptTemplate:
+def load_prompt_from_config(config_path: str) -> str:
+    """Load prompt template from a YAML config file and render it with Jinja2.
+
+    Args:
+        config_path: Path to the YAML config file.
+
+    Returns:
+        The rendered prompt template.
+    """
+    try:
+        if not os.path.exists(config_path):
+            return DEFAULT_TASK_MESSAGE
+
+        with open(config_path, "r") as file:
+            config = yaml.safe_load(file)
+
+        template_str = config.get("template", DEFAULT_TASK_MESSAGE)
+        template = jinja2.Template(template_str)
+
+        # Render any variables in the template with values from the config
+        context = config.get("context", {})
+        rendered_template = template.render(**context)
+
+        return rendered_template
+    except Exception as e:
+        print(f"Error loading prompt config: {e}")
+        return DEFAULT_TASK_MESSAGE
+
+
+def get_prompt_template(
+    config_path: str = "config/prompts/task_message.yaml",
+) -> ChatPromptTemplate:
     """Get the prompt template for the agent.
 
     Args:
-        system_message: The system message to use in the prompt.
+        config_path: Path to the prompt config file.
 
     Returns:
         The prompt template.
     """
+    task_message = load_prompt_from_config(config_path)
+
     return ChatPromptTemplate.from_messages(
         [
             HumanMessagePromptTemplate.from_template(
-                TASK_MESSAGE,
+                task_message,
             ),
             MessagesPlaceholder(variable_name="chat_history", optional=True),
             SystemMessage(content=SYSTEM_INFO),

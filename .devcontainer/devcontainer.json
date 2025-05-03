@@ -18,7 +18,8 @@
                 "njpwerner.autodocstring",
                 "Dart-Code.dart-code",
                 "Dart-Code.flutter",
-                "nash.awesome-flutter-snippets"
+                "nash.awesome-flutter-snippets",
+                "ms-azuretools.vscode-docker"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",

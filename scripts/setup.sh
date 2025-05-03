@@ -27,6 +27,10 @@ pip install -e ".[dev]"
 echo "📦 Installing core requirements..."
 pip install -r ai_coding_agent/core/requirements.txt
 
+# Explicitly install type stubs for Jinja2 and PyYAML to fix mypy errors
+echo "📦 Installing type stubs for templating libraries..."
+pip install types-Jinja2==2.11.9 types-PyYAML==6.0.12.12
+
 # Install CLI requirements
 echo "📦 Installing CLI requirements..."
 pip install -r ai_coding_agent/cli/requirements.txt

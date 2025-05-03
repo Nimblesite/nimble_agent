@@ -78,3 +78,5 @@ coverage.xml
 test_workspace/
 
 logs/
+
+SampleWorkspace/
