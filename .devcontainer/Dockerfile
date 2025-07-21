@@ -1,7 +1,8 @@
 FROM python:3.12.10-slim
 
-# Install necessary system packages
-RUN apt-get update && apt-get install -y \
+# Install necessary system packages - fix GPG issues
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get update --allow-releaseinfo-change && apt-get install -y \
     git \
     curl \
     build-essential \
