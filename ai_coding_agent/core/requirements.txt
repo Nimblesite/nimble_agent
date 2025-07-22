@@ -1,3 +1,4 @@
 langchain==0.3.26
 langchain-openai==0.3.28
 python-dotenv==1.1.1
+JSON-log-formatter==1.1

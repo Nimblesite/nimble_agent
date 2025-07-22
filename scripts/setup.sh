@@ -39,10 +39,6 @@ if [ -f "ai_coding_agent/tests/requirements-dev.txt" ]; then
     pip install -r ai_coding_agent/tests/requirements-dev.txt
 fi
 
-# Install pytest and pytest-asyncio explicitly to fix import errors
-echo "📦 Installing pytest and pytest-asyncio..."
-pip install pytest pytest-asyncio
-
 # Setup git config if not already set
 if [ -z "$(git config --global user.name)" ]; then
     echo "⚙️ Setting up git config..."
