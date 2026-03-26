@@ -1,14 +1,14 @@
 """Shared test functions used across test files."""
 
-import os
+import shutil
+import uuid
 from collections.abc import Callable, Coroutine
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Any, TypeVar
 
-from ai_coding_agent.core.local_workspace_manager import LocalWorkspaceManager
 from ai_coding_agent.core.logger import get_logger
-from ai_coding_agent.core.result import Err, Ok, is_ok, on_error, unwrap
+from ai_coding_agent.core.result import Err, Ok, is_ok
 from ai_coding_agent.core.tools.file_functions import write_file
 from ai_coding_agent.core.tools.result_types import (
     DirectoryStateData,
@@ -55,43 +55,23 @@ async def runtest(test_function: Callable[[str], Coroutine[Any, Any, T]]) -> T:
     if not workspace_base_path.exists():
         workspace_base_path.mkdir(parents=True, exist_ok=True)
 
-    workspace_id = None
+    # Create unique workspace directory
+    workspace_id = str(uuid.uuid4())
+    workspace_path = workspace_base_path / workspace_id
+
     try:
-        # Create workspace manager and workspace
-        workspace_manager = LocalWorkspaceManager(base_path=str(workspace_base_path))
-        create_result = await workspace_manager.create_workspace()
+        # Create the workspace directory
+        workspace_path.mkdir(parents=True, exist_ok=True)
 
-        def raise_error(x):
-            raise ValueError(f"Failed to create workspace: {x}")
-
-        on_error(create_result, raise_error)
-
-        # Get workspace path from creation result
-        workspace_path = unwrap(create_result)
-        workspace_dir = Path(workspace_path)
-
-        # Extract workspace ID from path
-        workspace_id = workspace_dir.name
-
-        # Ensure workspace directory exists and has correct permissions
-        if not workspace_dir.exists():
-            workspace_dir.mkdir(parents=True, exist_ok=True)
-
-        os.chmod(workspace_dir, 0o755)  # rwxr-xr-x
-
-        try:
-            return await test_function(workspace_path)
-        finally:
-            if workspace_id:
-                try:
-                    # Clean up workspace
-                    await workspace_manager.delete_workspace(workspace_id)
-                except Exception:
-                    logger.exception("Error cleaning up workspace")
-    except Exception:
-        logger.exception("Error in runtest")
-        # Clean up base directory on error
-        raise
+        # Run the test function with the workspace path
+        return await test_function(str(workspace_path))
+    finally:
+        # Clean up workspace directory
+        if workspace_path.exists():
+            try:
+                shutil.rmtree(workspace_path)
+            except Exception:
+                logger.exception(f"Error cleaning up workspace {workspace_path}")
 
 
 # TODO: remove this. We shouldn't use this, even in tests. Usesless function.

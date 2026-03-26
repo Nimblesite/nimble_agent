@@ -16,7 +16,6 @@ from ai_coding_agent.core.constants import (
     DEFAULT_MAXITERATIONS,
     DEFAULT_TEMPERATURE,
 )
-from ai_coding_agent.core.local_workspace_manager import LocalWorkspaceManager
 from ai_coding_agent.core.logger import get_logger
 from ai_coding_agent.core.report_generator import generate_html_report
 from ai_coding_agent.core.result import Err, Ok, Result, either
@@ -30,14 +29,13 @@ class NimbleAgentCLI:
     Manages workspaces and provides high-level interface for running AI-powered coding tasks.
     """
 
-    def __init__(self: Self, workspace_manager: LocalWorkspaceManager) -> None:
+    def __init__(self: Self) -> None:
         """Initialize the CLI handler.
 
         Args:
             workspace_manager: Optional workspace manager instance. If not provided,
                              a new one will be created with default settings.
         """
-        self.workspace_manager = workspace_manager
         self.logger = get_logger(__name__)
 
 
