@@ -16,8 +16,6 @@
     "editor.formatOnSave": true,
     // Pylance settings
     "python.languageServer": "Default",
-    // Mypy settings
-    "python.linting.mypyEnabled": true,
     "mypy.configFile": "mypy.ini",
     "mypy.runUsingActiveInterpreter": true,
     "mypy.targets": [
